@@ -99,7 +99,7 @@ proportions_approx(x=x,y=y)
 
 When the seed is set at 300, the 367th iteration is deemed the best, where $x_1$, $x_2$, and $x_3$ are set as 0.1161024, 0.4142341, and
 0.4696635, respectively, and the distance is 4.851886 x $10^{-6}$. This approximation is quite close to the true values used to generate the
-*y* matrix, which were $x_1$ = 0.13, $x_2$ = 0.43, and $x_3$ = 0.47, and if more iterations were used, the approximation would be even
+*y* matrix, which were $x_1$ = 0.13, $x_2$ = 0.40, and $x_3$ = 0.47, and if more iterations were used, the approximation would be even
 closer.
 
 ### Using real-world examples
