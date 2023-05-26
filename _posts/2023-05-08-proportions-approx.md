@@ -82,9 +82,8 @@ $$\begin{array}{c}
 
 Finally, *n* corresponds to the number of iterations to occur when approximating solutions. The default quantity is 1,000, though 5,000
 or even 10,000 iterations ought to be used when there are a large number of columns in the *x* matrix (regions in the example). Once
-these inputs have been provided, the function assigns random values to $x_1$, $x_2$, ..., $x_n$ that add up to 1 for each iteration, then calculates and
-calculates and stores the distance between the predicted value in the corresponding *y* matrix and the actual corresponding value in the
-*y* matrix. In this example, if the values chosen for  $x_1$, $x_2$, and $x_3$ were 0.36, 0.21, and 0.43, respectiveely, the predicted
+these inputs have been provided, the function assigns random values to $x_1$, $x_2$, ..., $x_n$ that add up to 1 for each iteration, then and stores the distance between the predicted value in the corresponding *y* matrix and the actual corresponding value in the
+*y* matrix. In this example, if the values chosen for  $x_1$, $x_2$, and $x_3$ were 0.36, 0.21, and 0.43, respectively, the predicted
 values of the *y* matrix would be 0.44, 0.22, and 0.34, and thus the distance (as defined in this function) between the predicted and actual values would be
 $(0.44-0.40)^2$ + $(0.22-0.25)^2$ + $(0.34-0.35)^2$ = 0.0026. The function then finds the iteration that yielded the smallest distance,
 and outputs that distance, and then the assigned values of $x_1$, $x_2$, ..., $x_n$. To use the function on the example data, we would
