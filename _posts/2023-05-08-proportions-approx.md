@@ -26,11 +26,7 @@ $0.23x_1 + 0.41x_2 + 0.11x_3 = 0.25$
 
 $0.20x_1 + 0.19x_2 + 0.53x_3 = 0.35$
 
-If no rounding was involved, it would be possible to find a unique solution to this system of linear equations; since these proportions
-are rounded, however, this proves to be impossible, and this problem stymied me for quite a while. After taking a class involving the 
-use of Monte Carlo methods, however, I was inspired to instead go about *approximating* the solutions to such systems, using iterations
-wherein random values for $x_1$, $x_2$, ..., $x_n$ are chosen and a distance formula is used to calculate the accuracy of that
-particular iteration. In order to do this, I wrote the following R function:
+Where $x_1$ is the percent of the population living in Region 1, $x_2$ is the percent of the population living in Region 2, and $x_3$ is the percent of the population living in Region 3. If no rounding was involved, it would be possible to find a unique solution to this system of linear equations; since these proportions are rounded, however, this proves to be impossible, and this problem stymied me for quite a while. After taking a class involving the use of Monte Carlo methods, however, I was inspired to instead go about *approximating* the solutions to such systems, using iterations wherein random values for $x_1$, $x_2$, ..., $x_n$ are chosen and a distance formula is used to calculate the accuracy of that particular iteration. In order to do this, I wrote the following R function:
 
 ``` R
     proportions_approx <- function(x,y,n=1000){
