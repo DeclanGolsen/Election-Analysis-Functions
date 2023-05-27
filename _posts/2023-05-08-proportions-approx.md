@@ -103,4 +103,63 @@ closer.
 
 ### Using real-world examples
 
-To be added soon!
+To test the predictive ability of this function, I looked at some data from the 2020 US Presidential Election, namely at results by county in Delaware and Nevada. I elected to look at Delaware first since it contains only three counties, and could provide basic information on the effectiveness of the function.
+
+For Delaware, I used the data in the following table to create the *x* and *y* matrices:
+
+| **County** | Kent   | New Castle | Sussex | Total  |
+|------------|--------|------------|--------|--------|
+| Democrat   | 0.5120 | 0.6781     | 0.4382 | 0.5878 |
+| Republican | 0.4712 | 0.3072     | 0.5507 | 0.3980 |
+| Other      | 0.0168 | 0.0147     | 0.0111 | 0.0142 |
+| Population | ?      | ?          | ?      | 1.00   |
+
+And used the following code to create a prediction:
+
+``` R
+set.seed(300)
+xDel<-matrix(c(0.5120, 0.4712, 0.0168, 0.6781, 0.3072, 0.0147,0.4382, 0.5507, 0.0111),nrow=3,ncol=3)
+yDel<-matrix(c(0.5878, 0.3980, 0.0142),nrow=3)
+proportions_approx(xDel,yDel)
+```
+
+Using one thousand iterations, the values for $x_1$, $x_2$, and $x_3$ that resulted in the smallest distance were 0.0483, 0.6103, and 0.3414, respectively; in other words, the function predicted that 4.83% of Delaware voters lived in Kent County, 61.03% lived in New Castle County, and 34.14% lived in Sussex County. Ordinally, these values are accurate, but this prediction has significant room for improvement, as seen in the table below.
+
+| **County**         | Kent       | New Castle | Sussex     | Total    |
+|--------------------|------------|------------|------------|----------|
+| Democrat           | 0.5120     | 0.6781     | 0.4382     | 0.5878   |
+| Republican         | 0.4712     | 0.3072     | 0.5507     | 0.3980   |
+| Other              | 0.0168     | 0.0147     | 0.0111     | 0.0142   |
+| **Predicted 1000** | **0.0483** | **0.6103** | **0.3414** | **1.00** |
+| Actual Pop.        | 0.1727     | 0.5707     | 0.2566     | 1.00     |
+
+Most notably, the population of Kent County was significantly underpredicted, while the population of Sussex County was overpredicted. Using 5,000 iterations instead, however, the prediction is rather accurate, as seen in the table below the code:
+
+``` R
+set.seed(300)
+proportions_approx(xDel,yDel,5000)
+```
+| **County**         | Kent       | New Castle | Sussex     | Total    |
+|--------------------|------------|------------|------------|----------|
+| Democrat           | 0.5120     | 0.6781     | 0.4382     | 0.5878   |
+| Republican         | 0.4712     | 0.3072     | 0.5507     | 0.3980   |
+| Other              | 0.0168     | 0.0147     | 0.0111     | 0.0142   |
+| Predicted 1000     | 0.0483     | 0.6103     | 0.3414     | 1.00     |
+| **Predicted 5000** | **0.1904** | **0.5666** | **0.2430** | **1.00** |
+| Actual Pop.        | 0.1727     | 0.5707     | 0.2566     | 1.00     |
+
+Accordingly it seems that, with a large enough sample size and using the first four digits of all the proportions involved, a reasonable prediction for the weight of each category can be achieved with this function.
+
+I chose to also look at Nevada's counties, given that the state has a greater number of them (16 counties and 1 independent city), and because the population of Nevada is extremely consentrated in two counties. Analyzing the state ought to allow the accuracy of the function to be determined when using bigger matrices, as well as accuracy across larger and smaller categories. Given the size of the *x* matrix, I used 5,000 iterations off the bat for Nevada's counties. I also used a CSV instead of inputing data by hand, taken from the Wikipedia page for the [2020 United States Presidential Election in Nevada](https://en.wikipedia.org/wiki/2020_United_States_presidential_election_in_Nevada). 
+
+```R
+nevada <- read.csv("~/Documents/nevada.csv", header=FALSE)
+set.seed(300)
+yNV<-t(nevada[18,])
+xNV<-t(nevada1)
+proportions_approx(xNV,yNV,5000)
+```
+
+### Applications
+
+### Areas for improvement
