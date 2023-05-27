@@ -105,7 +105,7 @@ closer.
 
 To test the predictive ability of this function, I looked at some data from the 2020 US Presidential Election, namely at results by county in Delaware and Nevada. I elected to look at Delaware first since it contains only three counties, and could provide basic information on the effectiveness of the function.
 
-For Delaware, I used the data in the following table to create the *x* and *y* matrices:
+For Delaware, I used the data in the following table (taken from the Wikipedia page for the [2020 United States Presidential Election in Delaware](https://en.wikipedia.org/wiki/2020_United_States_presidential_election_in_Delaware)) to create the *x* and *y* matrices:
 
 | **County** | Kent   | New Castle | Sussex | Total  |
 |------------|--------|------------|--------|--------|
@@ -150,7 +150,7 @@ proportions_approx(xDel,yDel,5000)
 
 Accordingly it seems that, with a large enough sample size and using the first four digits of all the proportions involved, a reasonable prediction for the weight of each category can be achieved with this function.
 
-I chose to also look at Nevada's counties, given that the state has a greater number of them (16 counties and 1 independent city), and because the population of Nevada is extremely consentrated in two counties. Analyzing the state ought to allow the accuracy of the function to be determined when using bigger matrices, as well as accuracy across larger and smaller categories. Given the size of the *x* matrix, I used 5,000 iterations off the bat for Nevada's counties. I also used a CSV instead of inputing data by hand, taken from the Wikipedia page for the [2020 United States Presidential Election in Nevada](https://en.wikipedia.org/wiki/2020_United_States_presidential_election_in_Nevada). 
+I chose to also look at Nevada's counties, given that the state has a greater number of them (16 counties and 1 independent city), and because the population of Nevada is extremely consentrated in two counties. Analyzing the state ought to allow the accuracy of the function to be determined when using bigger matrices, as well as accuracy across larger and smaller categories. Given the size of the *x* matrix, I used 5,000 iterations off the bat for Nevada's counties. I also used a CSV instead of inputing data by hand, taken from the Wikipedia page for the [2020 United States Presidential Election in Nevada](https://en.wikipedia.org/wiki/2020_United_States_presidential_election_in_Nevada). My results were determined using the following code:
 
 ```R
 nevada <- read.csv("~/Documents/nevada.csv", header=FALSE)
@@ -160,6 +160,33 @@ xNV<-t(nevada1)
 proportions_approx(xNV,yNV,5000)
 ```
 
+Since the table of results is pretty big, I’ll describe some of the findings instead. The proportion of the voting population found within Clark County, home to Las Vegas, was predicted almost perfectly (the prediction was 0.6949, while the actual proportion was 0.6920). For the remaining sixteen counties and county-equivalents, however, the predictions seem to have been rather random; Carson City was predicted to have a proportion of 0.2836, whereas in actuality it was 0.0212, and Washoe County was predicted to have a proportion of 1.772 x $10^{-11}$, when in actuality it was 0.1794. These inaccuracies are almost certainly the results of the randomization technique I employed. The method will be explained further in the **Areas for improvement** section, but essentially the expected value of a randomized proportion decreases the further down its category is in the list. For this dataset counties are listed alphabetically, and Washoe county is the second to last; this means the expected value of the randomized proportion assigned to it is 0.1526 x $10^{-5}$, so it is extremely unlikely that the actual proportion, 0.1794, would be assigned to it, and it would take tens of thousands of iterations to reasonably believe that this prediction would be generated. I also tried out the function with 10,000 iterations, using the following code:
+
+```R
+set.seed(300)
+proportions_approx(xNV,yNV,10000)
+```
+And the result was less accurate than the 5,000 iteration version, assigning the proportion 0.8654 to Clark County. Thus, for an *x* matrix with a lot of columns, this version of the function is only useful for identifying larger trends. After the randomization technique is updated, hopefully the function will be more useful for larger datasets.
+
 ### Applications
 
+As mentioned in the introduction section, this function can be used for any system of linear equations composed entirely of proportions. Thus this function could be used on any table with missing categorical weights and that shows proportions, whether they pertain to election results, demographics, virology, or any other subject. For hypothetical tables of proportions, where the weights are chosen last, this function would allow for the generation of reasonable approximations, and would also provide some insight as to how feasible it is that there would be any solution to the system of linear equations. Looking back at the language table involving a theoretical country, for example, say the *y* column matrix was rearranged and the table instead looked like this:
+
+| **Region** | Region 1 | Region 2 | Region 3 | Total |
+|------------|----------|----------|----------|-------|
+| Language 1 | 0.57     | 0.40     | 0.36     | 0.25  |
+| Language 2 | 0.23     | 0.41     | 0.11     | 0.40  |
+| Language 3 | 0.20     | 0.19     | 0.53     | 0.35  |
+| Population | ?        | ?        | ?        | 1.00  |
+
+The total difference between Language 2 and Language 1 is given as 0.15, but Language 2 is only more common than Language 1 in one region, and only by a single percentage point. Thus the function will provide the best solution it can, but the distance, the first number reported by the function, will reflect the accuracy of the solution provided. This should be taken into account in all uses of the function, but especially when the existence of a solution is uncertain.
+
 ### Areas for improvement
+
+As mentioned in the **Using real-world examples** section, the most significant area of improvement for this function is the randomization technique. Each proposed value of $x_i$ is uniformly distributed, but the upward bound of the range of each distribution is lowered by draws for earlier values; for example, if 0.43 is selected for $x_1$, and 0.31 is selected for $x_2$, then $x_3$ can only exist between 0 and 0.26. Accordingly, the expected value of each $x_i$ corresponds to $0.5^i$, since the expected value of a uniformly distributed variable between 0 and 1 is 0.5. This method ensures that the values for $x_1$, $x_2$, ..., $x_n$ add up to 1, but means that categories that appear later in the matrix are much less likely to be accurately predicted. I believe the solution to this problem lies in randomizing the assignment of predictions for each iteration; this way the order of rows in a matrix would not impact the prediction for each row. The expected value of draws would still diminish rather quickly, but at least as far as US Counties go, it often is the case that a handful of counties are home to most a state’s population, while most others have a very small population. Prior information about the sort of distribution the weights of categories follows could inform the sort of randomization technique employed, but in any case the one currently in use will be changed at some point in the near future.
+
+Another potential area of improvement would be allowing for incomplete information regarding category weight to included, i.e. if the weight of the population of one region was known, but that of three others was not. In any case, an updated version of the function will likely be created within the next few months.
+
+### Conclusion
+
+The proportions approximation function, proportions_approx() in R, accurately approximates the solutions to a system of linear equations if all values of the *x* matrix and the *y* column matrix are proportions whose columns add up to 1, and if there are relatively few columns in the *x* matrix (say five or less). When there are more columns, the function will be likely to pick up on general trends (i.e. whether a category accounts for a large or small percent of the total), but not more subtle ones. Once the randomization technique is improved upon the function will make better predictions for larger *x* matrices, but accuracy will still be lost as the number of columns increases. Thus, the proportions approximation function has both immediate applications and the prospect of serious improvement.
